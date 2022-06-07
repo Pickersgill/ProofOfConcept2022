@@ -1,3 +1,29 @@
 * Sudoku Solver in Z3
 
 This is a Sudoku solver which uses the Z3 SMT solver.
+
+* Usage
+
+** Requirements
+
+Requires working Python 3.10 versions of tkinter and z3.
+
+Both can be installed with pip, tkinter may also need =apt install  python3-tk=.
+
+** Instructions
+
+To run the solver simply execute main.py (Python 3.10+).
+
+Click on the grid to add a number to a cell. 
+Use the number keys (0-9) to change the number you'll add.
+Alternatively, press the "gen" button to randomly generate a problem.
+Press "clear" to clear the problem.
+Press "solve" to attempt to solve the grid, if the problem is unsolvable, the grid will flash red.
+
+* Credit and References
+
+The solving implementation is heavily based on the Z3 tutorial found [[https://ericpony.github.io/z3py-tutorial/guide-examples.htm][here]].
+The UI code is basically a hack based on another [[https://github.com/Pickersgill/CGLtk][simple TK app]] I wrote a few years ago.
+
+
+
