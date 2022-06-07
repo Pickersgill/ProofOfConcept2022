@@ -1,0 +1,10 @@
+import z3
+
+class Solver:
+    def __init__(self):
+        print("Spawned a new solver.")
+
+
+    def solve(self, problem):
+        print("Solvin problem...")
+
