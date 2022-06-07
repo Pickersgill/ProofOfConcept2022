@@ -1,5 +1,6 @@
 from tkinter import *
 import random
+import time
 from solver import SudokuSolver
 
 class CGL(Frame):
@@ -83,12 +84,26 @@ class CGL(Frame):
     def solve(self):
         sol = self.solver.solve(self.cells)
         if sol:
-            self.cells = sol
-            self.draw_cells()
+            self.fill_grid(0, 0, sol)
         else:
             self.draw_cells(True)
-            self.after(100, self.draw_cells)
+
+    def fill_grid(self, i, j, sol):
+        self.cells[i][j] = sol[i][j]
+        self.draw_cells()
+
+        j += 1
+
+        if j >= 9:
+            i += 1
+            j = 0
+            if i >= 9:
+                return
         
+        self.after(10, lambda : self.fill_grid(i, j, sol))
+
+
+
     def gen(self):
         self.clear_cells()
         x_list = [0, 1, 2, 3, 4, 5, 6, 7, 8]
