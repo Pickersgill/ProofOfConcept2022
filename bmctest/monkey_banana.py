@@ -116,4 +116,15 @@ solver.add(full)
 
 print(solver.check())
 if solver.check() == sat:
-    print(solver.model())
+    m = solver.model()
+    plan = []
+    for t in range(T):
+        for act in acts:
+            if act.t == t and m.evaluate(act.pred()):
+                plan += [act.name]
+    print("Satisfied model...")
+    print(m)
+    print("\nExtracted plan: ")
+    print(plan)
+
+
