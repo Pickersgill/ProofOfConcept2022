@@ -21,6 +21,13 @@ The Monkey and Banana Problem (AIMA 10.4):
     + ClimbUp (climb onto)
     + ClimbDown (climb down from)
     + Grasp/Ungrasp (grasp object that is the same place and height as monkey) 
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Eyes much bigger than my stomach here.
+
+Turns out implementing this (theoretically easy) example is actually very hard.
+Instead I've tried a REALLY simple example where the only action is "go" and there are
+just two positions (A and B).
 """
     
 loc = Type("loc")
