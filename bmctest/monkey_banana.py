@@ -32,7 +32,7 @@ just two positions (A and B).
     
 loc = Type("loc")
 [loc.add(s) for s in "AB"]
-T = 2
+T = 1
 
 at = Pred("at", [loc], T)
 go = Pred("go", [loc, loc], T)
