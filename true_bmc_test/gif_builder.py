@@ -1,11 +1,11 @@
 from PIL import Image, ImageDraw
 
 UNIT = 50
-FRAME_LENGTH = 20
+FRAME_LENGTH = 10
 BG = "#ffffff"
 
-def build(plan, dest, D, i_pos):
-    base = draw_grid(D)
+def build(plan, dest, D, i_pos, obs):
+    base = draw_grid(D, obs)
 
     imgs = [base] * 10
 
@@ -39,7 +39,7 @@ def build(plan, dest, D, i_pos):
             append_images=imgs[1:], 
             duration=len(plan) * FRAME_LENGTH)
 
-def draw_grid(d):
+def draw_grid(d, obs):
     img = Image.new("RGB", (UNIT * d, UNIT * d), BG)
     draw = ImageDraw.Draw(img)
 
@@ -49,6 +49,13 @@ def draw_grid(d):
 
         draw.line([0, y, d*UNIT, y], fill="#000000", width=2)
         draw.line([x, 0, x, d*UNIT], fill="#000000", width=2)
+
+    for o in obs:
+        x, y = o[0] * UNIT, o[1] * UNIT
+        draw.rectangle(
+            [x, y, x + UNIT, y + UNIT],
+            fill="#000000"
+        )
     
     return img
 

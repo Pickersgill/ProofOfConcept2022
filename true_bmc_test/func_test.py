@@ -20,6 +20,7 @@ at = Pred("at", [loc])
 at.flatten()
 
 adj = Pred("adj", [loc, loc])
+obs = [[0,1], [1,1], [2,1], [3,3]]
 
 StateSort, states = EnumSort("State", [n for n in at.preds])
 ActionSort, [up, down, left, right] = EnumSort("Action", ["up", "down", "left", "right"])
@@ -35,23 +36,24 @@ for x1 in range(D):
         for x2 in range(D):
             for y2 in range(D):
                 sq2 = grid[y2][x2]
+                unblocked = [x2, y2] not in obs
                 # Left
-                if x1 == x2 + 1 and y1 == y2:
+                if x1 == x2 + 1 and y1 == y2 and unblocked:
                     s.add(T(sq1, sq2, left) == True)
                 else:
                     s.add(T(sq1, sq2, left) == False)
                 # Right
-                if x1 == x2 - 1 and y1 == y2:
+                if x1 == x2 - 1 and y1 == y2 and unblocked:
                     s.add(T(sq1, sq2, right) == True)
                 else:
                     s.add(T(sq1, sq2, right) == False)
                 # Up
-                if x1 == x2  and y1 == y2 - 1:
+                if x1 == x2  and y1 == y2 - 1 and unblocked:
                     s.add(T(sq1, sq2, down) == True)
                 else:
                     s.add(T(sq1, sq2, down) == False)
                 # Down
-                if x1 == x2  and y1 == y2 + 1:
+                if x1 == x2  and y1 == y2 + 1 and unblocked:
                     s.add(T(sq1, sq2, up) == True)
                 else:
                     s.add(T(sq1, sq2, up) == False)
@@ -70,7 +72,7 @@ def search(depth):
     for i in range(depth-1):
         s.add(T(plan_states[i], plan_states[i+1], plan_acts[i]) == True)
 
-    goal = grid[2][2]
+    goal = grid[3][1]
     s.add(plan_states[-1] == goal)
 
     if s.check() == sat:
@@ -84,7 +86,7 @@ for l in range(1, 10):
     s.pop()
     if r:
         print(r)
-        gif_builder.build(r, "plans/plan%d.gif" % l, D, [0,0]) 
+        gif_builder.build(r, "plans/plan%d.gif" % l, D, [0,0], obs) 
 
 
 
