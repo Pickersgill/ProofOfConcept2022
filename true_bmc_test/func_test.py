@@ -22,57 +22,61 @@ at.flatten()
 adj = Pred("adj", [loc, loc])
 obs = [[0,1], [1,1], [2,1], [3,3]]
 
-StateSort, states = EnumSort("State", [n for n in at.preds])
+StateSort, states = EnumSort("State", [n for n in at.preds] + ["sink"])
 ActionSort, [up, down, left, right] = EnumSort("Action", ["up", "down", "left", "right"])
-T = Function("T", StateSort, StateSort, ActionSort, BoolSort())
+T = Function("T", StateSort, ActionSort, StateSort)
 
 s = Solver()
 
-grid = [states[k:k+5] for k in range(0, len(states),5)]
+grid = [states[k:k+5] for k in range(0, len(states)-1,5)]
+for g in grid:
+    print(g)
+
+sink = states[-1]
+
+s.add([T(sink, a) == sink for a in [up, down, left, right]])
 
 for x1 in range(D):
     for y1 in range(D):
         sq1 = grid[y1][x1]
-        for x2 in range(D):
-            for y2 in range(D):
-                sq2 = grid[y2][x2]
-                unblocked = [x2, y2] not in obs
-                # Left
-                if x1 == x2 + 1 and y1 == y2 and unblocked:
-                    s.add(T(sq1, sq2, left) == True)
-                else:
-                    s.add(T(sq1, sq2, left) == False)
-                # Right
-                if x1 == x2 - 1 and y1 == y2 and unblocked:
-                    s.add(T(sq1, sq2, right) == True)
-                else:
-                    s.add(T(sq1, sq2, right) == False)
-                # Up
-                if x1 == x2  and y1 == y2 - 1 and unblocked:
-                    s.add(T(sq1, sq2, down) == True)
-                else:
-                    s.add(T(sq1, sq2, down) == False)
-                # Down
-                if x1 == x2  and y1 == y2 + 1 and unblocked:
-                    s.add(T(sq1, sq2, up) == True)
-                else:
-                    s.add(T(sq1, sq2, up) == False)
+
+        # LEFT
+        if x1 - 1 >= 0 and [x1-1, y1] not in obs:
+            s.add(T(sq1, left) == grid[y1][x1-1])
+        else:
+            s.add(T(sq1, left) == sink)
+        # RIGHT
+        if x1 + 1 < D and [x1+1, y1] not in obs:
+            s.add(T(sq1, right) == grid[y1][x1+1])
+        else:
+            s.add(T(sq1, right) == sink)
+        # UP
+        if y1 - 1 >= 0 and [x1, y1-1] not in obs:
+            s.add(T(sq1, up) == grid[y1-1][x1])
+        else:
+            s.add(T(sq1, up) == sink)
+        # DOWN
+        if y1 + 1 < D and [x1, y1+1] not in obs:
+            s.add(T(sq1, down) == grid[y1+1][x1])
+        else:
+            s.add(T(sq1, down) == sink)
 
 def search(depth):
     plan_states = [None for _ in range(depth)]
     plan_acts = [None for _ in range(depth)]
 
     for i in range(depth):
-        plan_states[i] = Const("p%d" % i, StateSort)
+        plan_states[i] = Const("s%d" % i, StateSort)
         plan_acts[i] = Const("a%d" % i, ActionSort)
 
     init = grid[0][0]
     s.add(plan_states[0] == init)
 
     for i in range(depth-1):
-        s.add(T(plan_states[i], plan_states[i+1], plan_acts[i]) == True)
+        s.add(plan_states[i] != sink)
+        s.add(T(plan_states[i], plan_acts[i]) == plan_states[i+1])
 
-    goal = grid[3][1]
+    goal = grid[0][2]
     s.add(plan_states[-1] == goal)
 
     if s.check() == sat:
@@ -80,16 +84,16 @@ def search(depth):
     else:
         return False
 
-for l in range(1, 10):
+for l in range(1,10):
     s.push()
     r = search(l)
+    #print(s)
     s.pop()
     if r:
         print(r)
         gif_builder.build(r, "plans/plan%d.gif" % l, D, [0,0], obs) 
-
-
-
+    else:
+        print("Failed to solve within k=%d" % l)
 
 
 
